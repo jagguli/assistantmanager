@@ -1,0 +1,32 @@
+jira:
+  api:
+    server: https://company.atlassian.net/
+    username: pass://company/jira/user
+    password: pass://company/jira/password_or_apitoken
+  transitions:
+    open": Open
+    dev": 81
+    testing": 31
+    qa": 211
+    start": 11
+    analysis": 261
+    wontfix": 271
+  users:
+    user1: "5b55876075ss1ba2d6ea64178"
+    user2: "557058:3dds1d88e-2sb-0671237c77dc"
+  field_map:
+    key: "key"
+    summary: "fields.summary"
+    description: "fields.description"
+    reporter: "fields.reporter.displayName"
+    assignee: "fields.assignee.displayName"
+    status: "fields.status.name"
+    sprint: "fields.currentSprint"
+    labels: "fields.labels"
+    project: "fields.project.key"
+    issuetype: "fields.issuetype.name"
+    tester: "customfield_10500.displayName"
+gitlab:
+  testing_pipeline_project: 8039004
+  api:
+    personal_access_token: pass://company/gitlab/personal_access_token
