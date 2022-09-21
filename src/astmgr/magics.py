@@ -1,32 +1,28 @@
-import logging
 import functools
-import sys
-from IPython.core.magic import (
-    Magics,
-    magics_class,
-    line_magic,
-    cell_magic,
-    line_cell_magic,
-)
+import logging
 import re
-from tabulate import tabulate
-from pprint import pprint
+import shlex
 from datetime import datetime
-import yaml
+from pprint import pprint
+from subprocess import Popen
+
 import jmespath
+import yaml
+from IPython.core.magic import Magics, magics_class, line_magic
 from IPython.core.magic_arguments import (
     argument,
     magic_arguments,
     parse_argstring,
 )
-import shlex
 from docopt import docopt, DocoptExit
-from subprocess import Popen
-from pygments.lexers import YamlLexer
-from pygments.formatters import Terminal256Formatter
-from pygments import highlight
 from jira.exceptions import JIRAError
-from astmgr.utils import get_gitlab
+from pygments import highlight
+from pygments.formatters import Terminal256Formatter
+from pygments.lexers import YamlLexer
+from tabulate import tabulate
+
+from astmgr.utils import get_gitlab, get_jira, get_config
+from astmgr import CONFIG
 
 
 def docoptwrapper(function):
@@ -50,19 +46,16 @@ def docoptwrapper(function):
 class JiraMagics(Magics):
     "Magics that hold additional state"
 
-    def __init__(self, shell, jira, config):
+    def __init__(self, shell):
         # You must call the parent constructor
         super().__init__(shell)
-        self.CONFIG = config
-        self.jira = jira
+        self.jira = get_jira()
         self.boards = {}
         self.load_sprints()
         if shell:
             self.shell.user_ns["boards"] = self.boards
-        self.USERS = config.jira.users
-        self.FIELD_MAP = config.jira.field_map
-        if shell:
-            shell.register_magics(self)
+        self.USERS = CONFIG.jira.users
+        self.FIELD_MAP = CONFIG.jira.field_map
 
     @line_magic
     def load_sprints(self, line=None):
@@ -452,7 +445,7 @@ class JiraMagics(Magics):
     @line_magic
     @docoptwrapper
     def transition(self, line=""):
-        TRANSITIONS = self.CONFIG.jira.transitions
+        TRANSITIONS = CONFIG.jira.transitions
         args = docopt(
             """transition issue to %s
             Usage:
@@ -617,9 +610,7 @@ class JiraMagics(Magics):
         print(" --tags ".join(self.results))
         # https://python-gitlab.readthedocs.io/en/stable/gl_objects/pipelines_and_jobs.html#pipeline-schedule
         gitlab = get_gitlab()
-        project = gitlab.projects.get(
-            self.CONFIG.gitlab.testing_pipeline_project
-        )
+        project = gitlab.projects.get(CONFIG.gitlab.testing_pipeline_project)
         scheds = project.pipelineschedules.list()
         regression = f"{release} - Regression created by the AssistantManager"
         scheduled = [

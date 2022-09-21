@@ -1,26 +1,35 @@
-[tool.poetry]
-name = "assistantmanager"
-version = "0.1.0"
+[project]
+name = "astmgr"
+version = "0.0.1"
+authors = [
+  { name="Steven Joseph", email="steven@contextu.al" },
+]
 description = "Assistant manager will help you manage."
-authors = ["Steven Joseph <steven@stevenjoseph.in>"]
-license = "GPL"
 readme = "README.md"
+license = { file="LICENSE" }
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "docopt",
+    "python-box",
+    "jira",
+    "python-gitlab",
+    "PyYAML",
+    "tabulate",
+    "jmespath",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-jira = "^3.4.1"
-python-gitlab = "^3.9.0"
-docopt = "^0.6.2"
-python-box = "^6.0.2"
-PyYAML = "^6.0"
-tabulate = "^0.8.10"
-jmespath = "^1.0.1"
-
-[tool.poetry.group.dev.dependencies]
-ipdb = "^0.13.9"
-pytest = "^7.1.3"
-mock = "^4.0.3"
+[project.urls]
+"Homepage" = "https://github.com/jagguli/assistantmanager"
+"Bug Tracker" = "https://github.com/jagguli/assistantmanager/issues"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+astmgr = "astmgr.shell:main"
