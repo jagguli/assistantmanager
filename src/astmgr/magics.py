@@ -35,9 +35,10 @@ def docoptwrapper(function):
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
-        except (SystemExit, DocoptExit) as e:
-            print(e)
-            print(getattr(e, "usage", ""))
+        except SystemExit as e:
+            pass
+        except DocoptExit as e:
+            return function(args[0], "-h", **kwargs)
 
     return wrapper
 
@@ -584,13 +585,14 @@ class JiraMagics(Magics):
     @docoptwrapper
     def run_regression(self, line=""):
         args = docopt(
-            """list pending releases
+            """Find all the jira tickets for a release and 
+            then schedule a bdd run to execute test tagged with the tickets found.
 
             Usage:
                 run_regresion <release> [options] 
 
             Options:
-                --all
+                -v --verbose  More info please
             """,
             argv=shlex.split(line),
         )
@@ -630,7 +632,9 @@ class JiraMagics(Magics):
         else:
             scheduled = scheduled[0]
         scheduled.variables.create(
-            dict(key="TAGS", value=",".join(self.results))
+            dict(
+                key="TAGS", value=",".join(["astmgr-regression"] + self.results)
+            )
         ).save()
         scheduled.variables.create(
             dict(key="DEPLOYMENTS", value="staging")
