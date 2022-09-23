@@ -1,7 +1,0 @@
-docopt
-python-box
-jira
-python-gitlab
-PyYAML
-tabulate
-jmespath
